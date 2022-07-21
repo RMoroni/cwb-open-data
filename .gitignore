@@ -105,3 +105,9 @@ dist
 
 # Pycharm
 .idea/
+
+# Parquet Files
+*.parquet
+
+# Pycache
+__pycache__/

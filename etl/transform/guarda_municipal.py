@@ -50,3 +50,10 @@ def transform_columns(df: DataFrame) -> DataFrame:
     df['BAIRRO_NOME'] = df['BAIRRO_NOME'].str.upper()
 
     return df
+'''
+TODO: 
+    gerar datetime baseado nos campos de data e hora
+    separar transformação em duas etapas:
+        1: ajustar as colunas sem realizar mudanças significativas no DF
+        2: gerar outros DFs com agrupamentos
+'''

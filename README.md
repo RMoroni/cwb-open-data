@@ -4,7 +4,7 @@ Ferramentas para navegação nos Dados Abertos de Curitiba (https://www.curitiba
 
 # ETL
 
-As funções estão prontas para serem utilizadas de forma isolada (exemplo: para uma execução local), porém o objetivo
+As classes podem ser executadas de forma isolada para gerar os dados, porém o objetivo
 final é automatizar as etapas via Apache Airflow.
 
 ## Como executar
