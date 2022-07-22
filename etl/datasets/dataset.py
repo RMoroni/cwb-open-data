@@ -19,7 +19,7 @@ class Dataset(ABC):
         pass
 
     @abstractmethod
-    def _load_clean_data(self):
+    def load_clean_data(self):
         pass
 
     @property
