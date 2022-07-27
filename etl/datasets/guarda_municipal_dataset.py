@@ -97,10 +97,17 @@ class GuardaMunicipalDataset(Dataset):
         self._clean_data['REGIONAL_FATO_NOME'].fillna(value=NO_REGION, inplace=True)
 
     def _create_flag_columns(self):
-        pass
+        self._clean_data['FLAG_INT_EQUIPAMENTO_URBANO'] = self._clean_data['FLAG_EQUIPAMENTO_URBANO'].map(DICT_YES_NO)
+        self._clean_data['FLAG_INT_FLAGRANTE'] = self._clean_data['FLAG_FLAGRANTE'].map(DICT_YES_NO)
+        self._clean_data['FLAG_INT_OCORRENCIA_DIA_SEMANA'] = self._clean_data['OCORRENCIA_DIA_SEMANA'].map(
+            DICT_DAYS_OF_WEEK)
 
     def _transform_columns(self):
-        pass
+        self._clean_data['HORA'] = self._clean_data['OCORRENCIA_HORA'].str[:5]
+        self._clean_data['DATA'] = self._clean_data['OCORRENCIA_DATA'].str[:10]
+
+        self._clean_data['BAIRRO_NOME'] = self._clean_data['ATENDIMENTO_BAIRRO_NOME'].str.strip()
+        self._clean_data['BAIRRO_NOME'] = self._clean_data['BAIRRO_NOME'].str.upper()
 
 
 if __name__ == '__main__':
