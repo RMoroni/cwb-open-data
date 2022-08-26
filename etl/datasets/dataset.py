@@ -14,18 +14,16 @@ class Dataset(ABC):
         pass
 
     @property
-    @abstractmethod
     def raw_data(self) -> DataFrame:
-        pass
+        return self._raw_data
 
     @abstractmethod
     def load_clean_data(self):
         pass
 
     @property
-    @abstractmethod
     def clean_data(self) -> DataFrame:
-        pass
+        return self._clean_data
 
     @abstractmethod
     def save_dataset(self):

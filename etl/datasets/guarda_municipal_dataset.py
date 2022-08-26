@@ -1,6 +1,5 @@
 from datetime import date
 from urllib.error import URLError
-
 from pandas import DataFrame
 
 import pandas as pd
@@ -23,7 +22,7 @@ NO_REGION_LIST = ['-----------------------', 'BAIRRO FICTÍCIO', 'BAIRRO NAO INF
 class GuardaMunicipalDataset(Dataset):
 
     def __init__(self):
-        super().__init__(self.__class__.__name__)
+        super().__init__('guarda_municipal')
         self._load_raw_data()
 
     def _load_raw_data(self):
@@ -39,10 +38,6 @@ class GuardaMunicipalDataset(Dataset):
         except Exception as e:
             print(f'unable to load raw data: {e}')
 
-    @property
-    def raw_data(self) -> DataFrame:
-        return self._raw_data
-
     def load_clean_data(self):
         self._clean_data = self._raw_data.copy()
         print('Cleaning dataset...', end='')
@@ -54,10 +49,6 @@ class GuardaMunicipalDataset(Dataset):
         print('done!')
         print('Clean Dataset Null Values:')
         print(self._clean_data.isna().sum())
-
-    @property
-    def clean_data(self) -> DataFrame:
-        return self._clean_data
 
     def save_dataset(self):
         # TODO: create dir for datasets files
