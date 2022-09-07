@@ -1,5 +1,6 @@
 from datetime import date
 from urllib.error import URLError
+from os.path import exists
 from pandas import DataFrame
 
 import pandas as pd
@@ -19,6 +20,12 @@ NO_REGION_LIST = ['-----------------------', 'BAIRRO FICTÍCIO', 'BAIRRO NAO INF
                   'INDICAÇÕES CANCELADA', 'NAN', 'NF', 'NI', 'NÃO ENCONTRADO', 'NÃO INFORMADO', 'SEM DADOS', 'SB']
 
 
+def _fill_year(row):
+    if row['ATENDIMENTO_ANO'] is None:
+        row['ATENDIMENTO_ANO'] = date.fromisoformat(row['OCORRENCIA_DATA'][:10]).year
+    return row
+
+
 class GuardaMunicipalDataset(Dataset):
 
     def __init__(self):
@@ -27,6 +34,11 @@ class GuardaMunicipalDataset(Dataset):
 
     def _load_raw_data(self):
         print('Loading raw dataset...', end='')
+        if exists(f'{self.name}_raw_dataset.parquet'):
+            print('loading local raw dataset...', end='')
+            self._raw_data = pd.read_parquet(f'{self.name}_raw_dataset.parquet')
+            print('done!')
+            return
         path = f"https://mid.curitiba.pr.gov.br/dadosabertos/Sigesguarda/{date.today().year}-{'0' if date.today().month < 10 else None}{date.today().month if date.today().day > 1 else date.today().month - 1}-01_sigesguarda_-_Base_de_Dados.csv"
         try:
             self._raw_data = pd.read_csv(path, encoding='latin-1', sep=';', low_memory=False)
@@ -69,7 +81,7 @@ class GuardaMunicipalDataset(Dataset):
         self._clean_data.drop(labels=COLUMNS_TO_DROP, axis=1, inplace=True)
 
     def _drop_rows(self):
-        pass
+        self._clean_data.drop([0, 0], inplace=True)  # the first line is invalid
 
     def _fill_invalid_records(self):
         self._clean_data['FLAG_EQUIPAMENTO_URBANO'] = self._clean_data['FLAG_EQUIPAMENTO_URBANO'].apply(
@@ -86,6 +98,8 @@ class GuardaMunicipalDataset(Dataset):
         self._clean_data['REGIONAL_FATO_NOME'] = self._clean_data['REGIONAL_FATO_NOME'].apply(
             lambda x: NO_REGION if x == '--------------------' else x)
         self._clean_data['REGIONAL_FATO_NOME'].fillna(value=NO_REGION, inplace=True)
+
+        self._clean_data.apply(_fill_year, axis=1)
 
     def _create_flag_columns(self):
         self._clean_data['FLAG_INT_EQUIPAMENTO_URBANO'] = self._clean_data['FLAG_EQUIPAMENTO_URBANO'].map(DICT_YES_NO)
@@ -104,6 +118,5 @@ class GuardaMunicipalDataset(Dataset):
 if __name__ == '__main__':
     teste = GuardaMunicipalDataset()
     # print(teste.raw_data.head())
-    # teste.save_dataset()
     teste.load_clean_data()
-    print(teste.clean_data.head())
+    # teste.save_dataset()
