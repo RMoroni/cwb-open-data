@@ -1,7 +1,6 @@
 from datetime import date
 from urllib.error import URLError
 from os.path import exists
-from pandas import DataFrame
 
 import pandas as pd
 
@@ -21,8 +20,7 @@ NO_REGION_LIST = ['-----------------------', 'BAIRRO FICTÍCIO', 'BAIRRO NAO INF
 
 
 def _fill_year(row):
-    if row['ATENDIMENTO_ANO'] is None:
-        row['ATENDIMENTO_ANO'] = date.fromisoformat(row['OCORRENCIA_DATA'][:10]).year
+    row['ATENDIMENTO_ANO'] = date.fromisoformat(row['OCORRENCIA_DATA'][:10]).year
     return row
 
 
@@ -33,7 +31,6 @@ class GuardaMunicipalDataset(Dataset):
         self._load_raw_data()
 
     def _load_raw_data(self):
-        print('Loading raw dataset...', end='')
         if exists(f'{self.name}_raw_dataset.parquet'):
             print('loading local raw dataset...', end='')
             self._raw_data = pd.read_parquet(f'{self.name}_raw_dataset.parquet')
@@ -41,6 +38,7 @@ class GuardaMunicipalDataset(Dataset):
             return
         path = f"https://mid.curitiba.pr.gov.br/dadosabertos/Sigesguarda/{date.today().year}-{'0' if date.today().month < 10 else None}{date.today().month if date.today().day > 1 else date.today().month - 1}-01_sigesguarda_-_Base_de_Dados.csv"
         try:
+            print('Loading remote raw dataset...', end='')
             self._raw_data = pd.read_csv(path, encoding='latin-1', sep=';', low_memory=False)
             print('done!')
         except URLError:
@@ -99,7 +97,7 @@ class GuardaMunicipalDataset(Dataset):
             lambda x: NO_REGION if x == '--------------------' else x)
         self._clean_data['REGIONAL_FATO_NOME'].fillna(value=NO_REGION, inplace=True)
 
-        self._clean_data.apply(_fill_year, axis=1)
+        self._clean_data = self._clean_data[self._clean_data['ATENDIMENTO_ANO'].isna()].apply(_fill_year, axis=1)
 
     def _create_flag_columns(self):
         self._clean_data['FLAG_INT_EQUIPAMENTO_URBANO'] = self._clean_data['FLAG_EQUIPAMENTO_URBANO'].map(DICT_YES_NO)
