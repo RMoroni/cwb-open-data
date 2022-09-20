@@ -4,7 +4,7 @@ from os.path import exists
 
 import pandas as pd
 
-from dataset import Dataset
+from .dataset import Dataset
 
 COLUMNS_TO_DROP = ['NATUREZA1_DEFESA_CIVIL', 'NATUREZA2_DEFESA_CIVIL', 'NATUREZA2_DESCRICAO', 'NATUREZA3_DEFESA_CIVIL',
                    'NATUREZA3_DESCRICAO', 'NATUREZA4_DESCRICAO', 'NATUREZA5_DEFESA_CIVIL', 'NATUREZA5_DESCRICAO',
@@ -111,10 +111,3 @@ class GuardaMunicipalDataset(Dataset):
 
         self._clean_data['BAIRRO_NOME'] = self._clean_data['ATENDIMENTO_BAIRRO_NOME'].str.strip()
         self._clean_data['BAIRRO_NOME'] = self._clean_data['BAIRRO_NOME'].str.upper()
-
-
-if __name__ == '__main__':
-    teste = GuardaMunicipalDataset()
-    # print(teste.raw_data.head())
-    teste.load_clean_data()
-    # teste.save_dataset()
