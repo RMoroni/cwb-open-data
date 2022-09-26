@@ -17,11 +17,22 @@ DICT_DAYS_OF_WEEK = {'DOMINGO': 1, 'SEGUNDA': 2, 'TERÇA': 3, 'QUARTA': 4, 'QUIN
 NO_REGION = 'NR'
 NO_REGION_LIST = ['-----------------------', 'BAIRRO FICTÍCIO', 'BAIRRO NAO INFORMADO', 'BAIRRO NÃO LOCALIZAD',
                   'INDICAÇÕES CANCELADA', 'NAN', 'NF', 'NI', 'NÃO ENCONTRADO', 'NÃO INFORMADO', 'SEM DADOS', 'SB']
+LOCAL_PATH = 'datasets/local/'
+URL_CWB_OPEN_DATA = 'https://mid.curitiba.pr.gov.br/dadosabertos/Sigesguarda/'
 
 
 def _fill_year(row):
     row['ATENDIMENTO_ANO'] = date.fromisoformat(row['OCORRENCIA_DATA'][:10]).year
     return row
+
+
+def _fill_filename_date(month_subtract=1):
+    date_string = ''
+    date_today = date.today()
+    date_string += f'{date_today.year}-'
+    date_string += f'{"0" if date.today().month < 10 else None}'
+    date_string += f'{date.today().month if date.today().day > 1 else date.today().month - month_subtract}'
+    return date_string
 
 
 class GuardaMunicipalDataset(Dataset):
@@ -31,18 +42,18 @@ class GuardaMunicipalDataset(Dataset):
         self._load_raw_data()
 
     def _load_raw_data(self):
-        if exists(f'{self.name}_raw_dataset.parquet'):
+        if exists(f'{LOCAL_PATH}{self.name}_raw_dataset.parquet'):
             print('loading local raw dataset...', end='')
-            self._raw_data = pd.read_parquet(f'{self.name}_raw_dataset.parquet')
+            self._raw_data = pd.read_parquet(f'{LOCAL_PATH}{self.name}_raw_dataset.parquet')
             print('done!')
             return
-        path = f"https://mid.curitiba.pr.gov.br/dadosabertos/Sigesguarda/{date.today().year}-{'0' if date.today().month < 10 else None}{date.today().month if date.today().day > 1 else date.today().month - 1}-01_sigesguarda_-_Base_de_Dados.csv"
+        path = f"{URL_CWB_OPEN_DATA}{_fill_filename_date()}-01_sigesguarda_-_Base_de_Dados.csv"
         try:
             print('Loading remote raw dataset...', end='')
             self._raw_data = pd.read_csv(path, encoding='latin-1', sep=';', low_memory=False)
             print('done!')
         except URLError:
-            path = f"https://mid.curitiba.pr.gov.br/dadosabertos/Sigesguarda/{date.today().year}-{'0' if date.today().month < 10 else None}{date.today().month - 2}-01_sigesguarda_-_Base_de_Dados.csv"
+            path = f"{URL_CWB_OPEN_DATA}{_fill_filename_date(2)}-01_sigesguarda_-_Base_de_Dados.csv"
             self._raw_data = pd.read_csv(path, encoding='latin-1', sep=';', low_memory=False)
             print('done!')
         except Exception as e:
@@ -61,14 +72,13 @@ class GuardaMunicipalDataset(Dataset):
         print(self._clean_data.isna().sum())
 
     def save_dataset(self):
-        # TODO: create dir for datasets files
         if self._raw_data is not None:
             print(f'Saving {self.name} raw dataset...', end='')
-            self._raw_data.to_parquet(f'{self.name}_raw_dataset.parquet')
+            self._raw_data.to_parquet(f'{LOCAL_PATH}{self.name}_raw_dataset.parquet')
             print('done!')
         if self._clean_data is not None:
             print(f'Saving {self.name} clean dataset...', end='')
-            self._clean_data.to_parquet(f'{self.name}_clean_dataset.parquet')
+            self._clean_data.to_parquet(f'{LOCAL_PATH}{self.name}_clean_dataset.parquet')
             print('done!')
 
     @property
