@@ -40,10 +40,11 @@ class GuardaMunicipalDataset(Dataset):
     def __init__(self):
         super().__init__('guarda_municipal')
         self._load_raw_data()
+        # print(self._raw_data.count())
 
     def _load_raw_data(self):
         if exists(f'{LOCAL_PATH}{self.name}_raw_dataset.parquet'):
-            print('loading local raw dataset...', end='')
+            print('Loading local raw dataset...', end='')
             self._raw_data = pd.read_parquet(f'{LOCAL_PATH}{self.name}_raw_dataset.parquet')
             print('done!')
             return
@@ -68,8 +69,7 @@ class GuardaMunicipalDataset(Dataset):
         self._create_flag_columns()
         self._transform_columns()
         print('done!')
-        print('Clean Dataset Null Values:')
-        print(self._clean_data.isna().sum())
+        # print(self._clean_data.count())
 
     def save_dataset(self):
         if self._raw_data is not None:
@@ -107,7 +107,7 @@ class GuardaMunicipalDataset(Dataset):
             lambda x: NO_REGION if x == '--------------------' else x)
         self._clean_data['REGIONAL_FATO_NOME'].fillna(value=NO_REGION, inplace=True)
 
-        self._clean_data = self._clean_data[self._clean_data['ATENDIMENTO_ANO'].isna()].apply(_fill_year, axis=1)
+        # self._clean_data = self._clean_data[self._clean_data['ATENDIMENTO_ANO'].isna()].apply(_fill_year, axis=1)
 
     def _create_flag_columns(self):
         self._clean_data['FLAG_INT_EQUIPAMENTO_URBANO'] = self._clean_data['FLAG_EQUIPAMENTO_URBANO'].map(DICT_YES_NO)
