@@ -7,4 +7,5 @@ if __name__ == '__main__':
     guarda_municipal_dataset.load_clean_data()
     # guarda_municipal_dataset.save_dataset()
     gmc_graphs = GuardaMunicipalGraph()
-    gmc_graphs.generate_graphs()
+    # gmc_graphs.generate_graphs()
+    gmc_graphs.print_general_statistics()
