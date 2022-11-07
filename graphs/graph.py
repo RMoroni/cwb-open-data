@@ -7,17 +7,12 @@ class Graph(ABC):
         self._name = graph_name
         self._dataset_path = dataset_path
         self._dataset = None
-        self._graph_list = []
 
     @abstractmethod
     def _load_dataset(self):
         pass
 
     @abstractmethod
-    def _generate_graphs(self):
-        pass
-
-    @abstractmethod
-    def _save_graphs(self):
+    def generate_graphs(self):
         pass
 
