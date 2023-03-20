@@ -3,13 +3,14 @@
 Ferramentas para navegação nos Dados Abertos de Curitiba (https://www.curitiba.pr.gov.br/dadosabertos/)
 
 # ETL
-
-As classes podem ser executadas de forma isolada para gerar os dados, porém o objetivo
-final é automatizar as etapas via Apache Airflow.
-
 ## Como executar
 ```
-// TODO
+docker build .
+docker run -it -p 8080:8080 IMAGE_ID bash
+```
+Então rode o comando para inciar o airflow:
+```
+airflow webserver --port 8080 -D && airflow scheduler -D
 ```
 
 ## Módulos
