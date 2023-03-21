@@ -10,7 +10,7 @@ docker run -it -p 8080:8080 IMAGE_ID bash
 ```
 Então rode o comando para inciar o airflow:
 ```
-airflow webserver --port 8080 -D && airflow scheduler -D
+airflow scheduler -D
 ```
 
 ## Módulos
