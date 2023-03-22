@@ -111,3 +111,8 @@ dist
 
 # Pycache
 __pycache__/
+
+# Package Setup Files
+build/
+dist/
+cwb_open_data.egg-info/

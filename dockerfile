@@ -12,7 +12,8 @@ COPY . $PROJECT_HOME
 RUN chmod 775 -R $PROJECT_HOME
 
 USER airflow
-# WORKDIR $AIRFLOW_HOME
+WORKDIR $PROJECT_HOME
+RUN pip install -e .
 RUN airflow db init
 RUN airflow users create \
     --username ryuk \

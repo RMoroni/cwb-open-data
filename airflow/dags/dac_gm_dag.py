@@ -1,9 +1,7 @@
 from datetime import datetime
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
-import sys
-sys.path.append('/home')
-from cwb_open_data.datasets.guarda_municipal_dataset import GuardaMunicipalDataset
+from datasets.guarda_municipal_dataset import GuardaMunicipalDataset
 
 
 def get_dataset():
